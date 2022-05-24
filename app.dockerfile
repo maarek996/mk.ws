@@ -4,10 +4,14 @@ RUN apt-get update && a2enmod rewrite
 
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-RUN apt-get install apt-utils -y && apt-get install wget -y && apt-get install tar -y
-RUN cd ~ && wget https://wordpress.org/latest.tar.gz && tar zxvf latest.tar.gz && mv wordpress/* /var/www/html
-RUN rm -rf latest.tar.gz && rm -rf wordpress
+RUN apt-get install apt-utils -y && apt-get install wget -y && apt install zip -y
+RUN wget https://wordpress.org/latest.zip
 
 RUN docker-php-ext-install mysqli
-COPY ./wp-config.php /var/www/html
-RUN service apache2 restart
+
+COPY wp-config.php /var/www/html/wp-config.php
+COPY ./vhost.conf /etc/apache2/sites-available/000-default.conf
+COPY ./entrypoint.sh /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
+
+
